@@ -1,17 +1,29 @@
 (function () {
   chrome.storage.local.get(['blockedData'], (result) => {
     const blockedData = result.blockedData || {};
+    console.log('Specific Site Blocker loaded for', window.location.href, 'blockedData keys:', Object.keys(blockedData));
+
+    function findBlockedSite(hostname) {
+      const normalizedHost = hostname.toLowerCase().replace(/^www\./, '');
+      const matchingKey = Object.keys(blockedData).find(key => {
+        const normalizedKey = key.toLowerCase().replace(/^www\./, '');
+        return normalizedHost === normalizedKey || normalizedHost.endsWith(`.${normalizedKey}`);
+      });
+      return matchingKey ? blockedData[matchingKey] : undefined;
+    }
 
     function isAllowed() {
       const currentSite = window.location.hostname;
       const currentPath = window.location.pathname;
+      const blockedSite = findBlockedSite(currentSite);
 
       // If site not in blocklist, skip
-      if (!blockedData[currentSite]) {
-        return true; 
+      if (!blockedSite) {
+        console.log('Specific Site Blocker: no blocked entry for', currentSite, 'stored keys:', Object.keys(blockedData));
+        return true;
       }
 
-      const allowedRoutes = blockedData[currentSite];
+      const allowedRoutes = blockedSite;
       
       // Check if current path matches or starts with any allowed route
       return allowedRoutes.some(route => 
@@ -21,13 +33,16 @@
 
     function enforce() {
       if (!isAllowed()) {
+        console.log(`Access blocked for: ${window.location.href}`);
         const currentSite = window.location.hostname;
-        const allowedRoutes = blockedData[currentSite];
+        const blockedSite = findBlockedSite(currentSite);
+        const allowedRoutes = blockedSite || [];
         
         // Fallback destination: use the first allowed route
         const fallbackPath = allowedRoutes.length > 0 ? allowedRoutes[0] : "/";
         
         window.location.replace(`https://${currentSite}${fallbackPath}`);
+        alert('Site Blocked! You have been redirected');
       }
     }
 

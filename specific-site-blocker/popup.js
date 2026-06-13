@@ -9,10 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Handle button click to add a new blocked route
   blockBtn.addEventListener('click', () => {
-    const site = siteInput.value.trim().toLowerCase();
-    const route = routeInput.value.trim();
+    let site = siteInput.value.trim().toLowerCase();
+    let route = routeInput.value.trim();
 
-    if (!site || !route) return alert('Please fill in both fields.');
+    if (!site) return alert('Please at least fill in the site field.');
+
+    try {
+      site = new URL(site.includes('://') ? site : `https://${site}`).hostname;
+    } catch (e) {
+      return alert('Please enter a valid site, e.g. instagram.com');
+    }
+
+    if (!route.startsWith('/')) {
+      route = `/${route}`;
+    }
 
     // Fetch existing data from storage
     chrome.storage.local.get(['blockedData'], (result) => {
@@ -61,8 +71,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             chrome.storage.local.get(['blockedData'], (result) => {
               const blockedData = result.blockedData || {};
-              blockedData[site] = blockedData[site].filter(r => r !== route);
 
+              // Subtract current route from array
+              const newRoutes = blockedData[site].filter(r => r !== route);
+              
+              // Remove key if no routes left
+              if (newRoutes.length === 0) {
+                delete blockedData[site];
+              } else {
+                blockedData[site] = newRoutes;
+              }
               chrome.storage.local.set({ blockedData }, () => {
                 displayBlockedSites();
               });
