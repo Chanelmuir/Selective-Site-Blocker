@@ -14,6 +14,7 @@ chrome://extensions
 ## Usage
 
 ![Alt text](/popup_screenshot.png?raw=true "Example Screenshot")
+
 This blocks all of facebook, and all of instagram except the explore and messaging pages.
 
 ## Contributing
