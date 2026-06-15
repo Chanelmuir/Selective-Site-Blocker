@@ -11,7 +11,7 @@ Click load unpacked extensions and select this folder
 chrome://extensions
 ```
 
-I was able to install this extension on mobile by enabling developer tools in the Microsoft Edge Browser. You can then load the .crx file found in this github, or pack the folder into a .crx yourself using the chrome browser on desktop.
+I was able to install this extension on mobile by enabling developer tools in the Microsoft Edge Canary Browser. You can then load the .crx file found in this github, or pack the folder into a .crx yourself using the chrome browser on desktop.
 
 ## Usage
 
