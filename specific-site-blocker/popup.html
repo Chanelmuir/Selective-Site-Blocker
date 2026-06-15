@@ -4,20 +4,24 @@
   <meta charset="utf-8">
   <style>
     body { width: 250px; padding: 10px; font-family: sans-serif; }
-    input { width: 90%; margin-bottom: 8px; padding: 4px; }
+    input { width: 90%; margin-bottom: 8px; padding: 4px; margin-top: 0px; }
     button { width: 96%; padding: 6px; cursor: pointer; }
     ul { padding-left: 20px; font-size: 13px; }
     table { width: 96%; border-collapse: collapse; margin-top: 10px; border: 1px solid #000000; }
     th, td { border: 1px solid #000000; padding: 4px; text-align: left; }
+    p { margin: 5px 0; }
+    .title { text-align: center; font-weight: bold; padding: 12px 0px; background-color: #a19f9f32; margin-top: 0px; margin-bottom: 15px}
   </style>
 </head>
 <body>
-  <h3>Block a Route</h3>
-  <p>Site to block:</p>
+  <div class="title">
+    <h3>Specific Site Blocker</h3>
+  </div>
+  <p><b>Site to block:</b></p>
   <input type="text" id="siteInput" placeholder="e.g., instagram.com">
-  <p>Route to allow:</p>
+  <p><b>Route to allow:</b> (optional)</p>
   <input type="text" id="routeInput" placeholder="e.g., /direct">
-  <button id="blockBtn">Block Route</button>
+  <button id="blockBtn">Block Site</button>
 
   <table>
     <thead>

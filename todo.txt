@@ -1,7 +1,0 @@
-Allow for just blocking sites
-
-Add html popup explaining redirect
-
-Update logo
-
-Have blocked page for when no redirect is setup

@@ -20,9 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return alert('Please enter a valid site, e.g. instagram.com');
     }
 
-    if (!route.startsWith('/')) {
+    if (route.length > 0 && !route.startsWith('/')) {
       route = `/${route}`;
     }
+    
 
     // Fetch existing data from storage
     chrome.storage.local.get(['blockedData'], (result) => {
@@ -33,8 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
         blockedData[site] = [];
       }
 
-      // Add route if it's not a duplicate
-      if (!blockedData[site].includes(route)) {
+      // Add route if it exists and is new
+      if (route.length > 0 && !blockedData[site].includes(route)) {
         blockedData[site].push(route);
       }
 
@@ -54,6 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const blockedData = result.blockedData || {};
 
       for (const [site, routes] of Object.entries(blockedData)) {
+
+        // So it still shows site that have no routes
+        if (routes.length === 0) { routes.push(' '); }
+
         routes.forEach(route => {
           const tr = document.createElement('tr');
           const siteTd = document.createElement('td');
