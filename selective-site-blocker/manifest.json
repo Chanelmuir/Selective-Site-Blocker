@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Specific Site Blocker",
+  "name": "Selective Site Blocker",
   "version": "1.0",
   "description": "Blocks access to websites... with specificity!",
   "permissions": [
