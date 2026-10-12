@@ -1,17 +1,84 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Site Blocked</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Site blocked</title>
+  <link rel="icon" href="icon.png">
   <style>
-    body { font-family: system-ui, sans-serif; text-align: center; padding-top: 10vh; background: #f9f9f9; color: #333; }
-    .card { max-width: 500px; margin: 0 auto; padding: 30px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    h1 { color: #d9534f; }
+    :root {
+      --bg: #ffffff;
+      --ink: #1d2433;
+      --muted: #6a7385;
+      --strike: #e5383b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #171a21;
+        --ink: #e8eaf0;
+        --muted: #8f97a8;
+        --strike: #f05a5c;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      align-items: center;
+      padding: 48px 24px;
+      background: var(--bg);
+      color: var(--ink);
+      font: 17px/1.55 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+    main { width: min(620px, 100%); margin: 0 auto 8vh; }
+
+    h1 {
+      margin: 0 0 20px;
+      font-size: clamp(36px, 8vw, 64px);
+      font-weight: 650;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      overflow-wrap: anywhere;
+    }
+    .struck { position: relative; display: inline-block; }
+    .struck::after {
+      content: "";
+      position: absolute;
+      left: -0.04em;
+      right: -0.04em;
+      top: 54%;
+      height: 0.08em;
+      border-radius: 1em;
+      background: var(--strike);
+      transform-origin: left center;
+      animation: strike 0.45s cubic-bezier(0.65, 0, 0.35, 1) 0.25s both;
+    }
+    @keyframes strike { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @media (prefers-reduced-motion: reduce) { .struck::after { animation: none; } }
+
+    p { margin: 0 0 10px; max-width: 46ch; color: var(--muted); }
+    p.lead { color: var(--ink); }
+
+    footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 40px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    footer img { width: 18px; height: 18px; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Blocked</h1>
-    <p>This website has been blocked by Selective Site Blocker and has no redirect available.</p>
-  </div>
+  <main>
+    <h1><span class="struck" id="blockedHost">This site</span></h1>
+    <p class="lead">You've blocked this whole site, so there's no page to send you to.</p>
+    <p>To keep part of it open, add a page in the Selective Site Blocker popup.</p>
+    <footer><img src="icon.png" alt="">Selective Site Blocker</footer>
+  </main>
+  <script src="blocked.js"></script>
 </body>
 </html>

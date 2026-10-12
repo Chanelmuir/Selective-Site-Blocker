@@ -3,38 +3,126 @@
 <head>
   <meta charset="utf-8">
   <style>
-    body { width: 250px; padding: 10px; font-family: sans-serif; }
-    input { width: 90%; margin-bottom: 8px; padding: 4px; margin-top: 0px; }
-    button { width: 96%; padding: 6px; cursor: pointer; }
-    ul { padding-left: 20px; font-size: 13px; }
-    table { width: 96%; border-collapse: collapse; margin-top: 10px; border: 1px solid #000000; }
-    th, td { border: 1px solid #000000; padding: 4px; text-align: left; }
-    p { margin: 5px 0; }
-    .title { text-align: center; font-weight: bold; padding: 12px 0px; background-color: #a19f9f32; margin-top: 0px; margin-bottom: 15px}
+    :root {
+      --bg: #ffffff;
+      --field: #f3f4f7;
+      --ink: #1d2433;
+      --muted: #6a7385;
+      --hairline: #e6e8ee;
+      --strike: #e5383b;
+      --allow: #1f9d55;
+      --focus: #3b6fe0;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #171a21;
+        --field: #222631;
+        --ink: #e8eaf0;
+        --muted: #8f97a8;
+        --hairline: #2a2f3b;
+        --strike: #f05a5c;
+        --allow: #3cc177;
+        --focus: #7a9ef0;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      width: 300px;
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 14px/1.45 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 14px 16px 12px;
+    }
+    header img { width: 22px; height: 22px; }
+    header h1 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.005em; }
+
+    form { padding: 4px 16px 16px; border-bottom: 1px solid var(--hairline); }
+    label { display: block; margin: 0 0 4px; font-size: 12.5px; color: var(--muted); }
+    input {
+      display: block;
+      width: 100%;
+      margin: 0 0 12px;
+      padding: 8px 10px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: var(--field);
+      color: var(--ink);
+      font: inherit;
+    }
+    input::placeholder { color: var(--muted); opacity: 0.75; }
+    input:focus { outline: none; border-color: var(--focus); background: var(--bg); }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    .submit {
+      width: 100%;
+      padding: 8px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--ink);
+      color: var(--bg);
+      font-weight: 600;
+    }
+    .submit:hover { opacity: 0.88; }
+    .submit:focus-visible, .remove:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+    .error { margin: 8px 0 0; color: var(--strike); font-size: 12.5px; }
+    .error:empty { display: none; }
+
+    /* The list: blocked hosts are struck through, allowed routes hang underneath */
+    ul { list-style: none; margin: 0; padding: 0; }
+    #blockList { padding: 6px 0 10px; max-height: 320px; overflow-y: auto; }
+    .site { padding: 6px 16px; }
+    .row { display: flex; align-items: center; gap: 8px; min-height: 26px; }
+    .host {
+      flex: 1;
+      overflow-wrap: anywhere;
+      font-weight: 600;
+    }
+    .whole { font-size: 12.5px; color: var(--muted); }
+    .routes { margin: 2px 0 0 1px; padding-left: 12px; border-left: 1px solid var(--hairline); }
+    .route { color: var(--muted); }
+    .path { flex: 1; overflow-wrap: anywhere; color: var(--ink); }
+    .route > svg { flex: none; color: var(--allow); }
+    .remove {
+      flex: none;
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border: 0;
+      border-radius: 5px;
+      background: none;
+      color: var(--muted);
+      opacity: 0.55;
+    }
+    .row:hover .remove, .remove:focus-visible { opacity: 1; }
+    .remove:hover { background: var(--field); color: var(--ink); }
+    .empty { padding: 18px 16px 12px; color: var(--muted); font-size: 13px; }
   </style>
 </head>
 <body>
-  <div class="title">
-    <h3>Specific Site Blocker</h3>
-  </div>
-  <p><b>Site to block:</b></p>
-  <input type="text" id="siteInput" placeholder="e.g., instagram.com">
-  <p><b>Route to allow:</b> (optional)</p>
-  <input type="text" id="routeInput" placeholder="e.g., /direct">
-  <button id="blockBtn">Block Site</button>
+  <header>
+    <img src="icon.png" alt="">
+    <h1>Selective Site Blocker</h1>
+  </header>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Blocked Sites:</th>
-        <th>Allowed Routes:</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody id="blockListBody">
+  <form id="blockForm" novalidate>
+    <label for="siteInput">Site to block</label>
+    <input type="text" id="siteInput" placeholder="instagram.com" autocomplete="off" autofocus>
+    <label for="routeInput">Page to keep open (optional)</label>
+    <input type="text" id="routeInput" placeholder="/direct" autocomplete="off">
+    <button type="submit" class="submit" id="blockBtn">Block site</button>
+    <p class="error" id="formError" role="alert"></p>
+  </form>
 
-    </tbody>
-  </table>
+  <ul id="blockList" aria-label="Blocked sites"></ul>
 
   <script src="popup.js"></script>
 </body>

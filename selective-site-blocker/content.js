@@ -1,6 +1,6 @@
 (function () {
   chrome.storage.local.get(['blockedData'], (result) => {
-    const blockedData = result.blockedData || {};
+    let blockedData = result.blockedData || {};
     console.log('Specific Site Blocker loaded for', window.location.href, 'blockedData keys:', Object.keys(blockedData));
 
     function findBlockedSite(hostname) {
@@ -14,7 +14,7 @@
 
     function isAllowed() {
       if (window.location.search.includes('blockedRedirect=true')) {
-        showNotification("Site Blocked! You have automatically been redirected");
+        showNotification("That page is blocked, so you've been sent to one you kept open.");
         
         const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
         window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
@@ -35,10 +35,15 @@
       // If no routes, block entire site
       if (allowedRoutes.length === 0) { return false; }
 
-      // Check if current path matches or starts with any allowed route
-      return allowedRoutes.some(route => 
-        currentPath === route || currentPath.startsWith(route)
-      );
+      // Check if current path is an allowed route or a page beneath one
+      return allowedRoutes.some(route => routeMatches(currentPath, route));
+    }
+
+    // "/direct" matches "/direct" and "/direct/inbox", but not "/directory"
+    function routeMatches(path, route) {
+      if (path === route || route === '/') return true;
+      const prefix = route.endsWith('/') ? route : `${route}/`;
+      return path.startsWith(prefix);
     }
 
     // Little popup notification for explaining redirects
@@ -92,6 +97,14 @@
         enforce();
       }
     }, 200);
+
+    // Apply block list changes made in the popup to tabs that are already open
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area === 'local' && changes.blockedData) {
+        blockedData = changes.blockedData.newValue || {};
+        enforce();
+      }
+    });
 
     enforce();
     });

@@ -4,7 +4,8 @@
   "version": "1.0",
   "description": "Blocks access to websites... with specificity!",
   "permissions": [
-    "storage"
+    "storage",
+    "activeTab"
   ],
   "action": {
     "default_popup": "popup.html",
